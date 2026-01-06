@@ -127,34 +127,35 @@ def build_report(path_a: Path, path_b: Path) -> Tuple[pd.DataFrame, Optional[dat
     if days_between is None or days_between == 0:
         merged["avg_xantaken_per_day"] = np.nan
     else:
-        merged["avg_xantaken_per_day"] = (merged["xantaken_max"] - merged["xantaken_min"]) / days_between
+        merged["avg_xantaken_per_day"] = (merged["xantaken_max"] - merged["xantaken_min"]) / days_between - 1
+        # We subtract 1 from the given days since there is a 1 day delay in the API
 
     def _status(row: pd.Series) -> str:
         a_missing = pd.isna(row["xantaken_a"])
         b_missing = pd.isna(row["xantaken_b"])
         if a_missing and b_missing:
-            return "missing_both"
+            return "Never Taken Xan!!!"
         if a_missing:
-            return "missing_in_file1"
+            return "New Recruit"
         if b_missing:
-            return "missing_in_file2"
+            return "Not in Faction and Time of Second Snapshot"
         return "ok"
 
     merged["status"] = merged.apply(_status, axis=1)
-    merged["start_date"] = str(start_date) if start_date else ""
-    merged["end_date"] = str(end_date) if end_date else ""
-    merged["days_between"] = days_between if days_between is not None else ""
+    #merged["start_date"] = str(start_date) if start_date else ""
+    #merged["end_date"] = str(end_date) if end_date else ""
+    #merged["days_between"] = days_between if days_between is not None else ""
 
     # Column order
     out_cols = (
         ["user_id"]
         + meta_cols
-        + ["xantaken_a", "xantaken_b", "diff_xantaken", "avg_xantaken_per_day", "start_date", "end_date", "days_between", "status"]
+        + ["xantaken_a", "xantaken_b", "diff_xantaken", "avg_xantaken_per_day", "status"]#, "start_date", "end_date", "days_between"]
     )
     out_cols = [c for c in out_cols if c in merged.columns]
 
     report = merged[out_cols].sort_values(
-        by=["status", "diff_xantaken", "user_id"],
+        by=["position", "diff_xantaken", "user_id"],
         ascending=[True, False, True],
         na_position="last",
     )
