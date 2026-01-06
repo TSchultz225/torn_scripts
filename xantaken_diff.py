@@ -142,7 +142,7 @@ def build_report(path_a: Path, path_b: Path) -> Tuple[pd.DataFrame, Optional[dat
             return "Not in Faction and Time of Second Snapshot"
         if avg_xan_taken < 1:
             return "Fail"
-        if avg_xan_taken > 2:
+        if avg_xan_taken >= 2:
             return "Exceeds"
         return "Pass"
 
