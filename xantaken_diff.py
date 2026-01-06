@@ -133,13 +133,18 @@ def build_report(path_a: Path, path_b: Path) -> Tuple[pd.DataFrame, Optional[dat
     def _status(row: pd.Series) -> str:
         a_missing = pd.isna(row["xantaken_a"])
         b_missing = pd.isna(row["xantaken_b"])
+        avg_xan_taken = row["avg_xantaken_per_day"]
         if a_missing and b_missing:
             return "Never Taken Xan!!!"
         if a_missing:
             return "New Recruit"
         if b_missing:
             return "Not in Faction and Time of Second Snapshot"
-        return "ok"
+        if avg_xan_taken < 1:
+            return "Fail"
+        if avg_xan_taken > 2:
+            return "Exceeds"
+        return "Pass"
 
     merged["status"] = merged.apply(_status, axis=1)
     #merged["start_date"] = str(start_date) if start_date else ""
