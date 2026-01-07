@@ -127,7 +127,7 @@ def build_report(path_a: Path, path_b: Path) -> Tuple[pd.DataFrame, Optional[dat
     if days_between is None or days_between == 0:
         merged["avg_xantaken_per_day"] = np.nan
     else:
-        merged["avg_xantaken_per_day"] = (merged["xantaken_max"] - merged["xantaken_min"]) / (days_between - 1)
+        merged["avg_xantaken_per_day"] = (merged["xantaken_max"] - merged["xantaken_min"]) / (days_between)
         # We subtract 1 from the given days since there is a 1 day delay in the API
 
     def _status(row: pd.Series) -> str:

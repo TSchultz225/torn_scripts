@@ -38,7 +38,7 @@ def torn_get(
     Torn can return errors in-body (e.g. error.code == 5 for rate limit).
     """
     headers = {
-        "Authorization": f"ApiKey {api_key}",
+        "Authorization": f"ApiKey xOZ42wvjt01rhnl9",
         "Accept": "application/json",
         "User-Agent": "faction-xantaken-export/1.0",
     }
@@ -110,9 +110,8 @@ def get_member_xantaken(session: requests.Session, api_key: str, user_id: int) -
     url = f"{BASE_URL}/user/{user_id}/personalstats"
     data = torn_get(session, url, api_key=api_key, params={"stat": "xantaken"})
     ps = data.get("personalstats", {})
-    if not isinstance(ps, dict):
-        return None
-    val = ps.get("xantaken")
+    per_stats = ps.pop()
+    val = per_stats.get("value")
     return int(val) if isinstance(val, (int, float)) else None
 
 
@@ -164,7 +163,7 @@ def main() -> int:
                     "position": position,
                     "level": level,
                     "xantaken": xantaken,
-                    "error": err,
+                    "export_date": today
                 }
             )
 
@@ -177,7 +176,7 @@ def main() -> int:
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f,
-            fieldnames=["user_id", "name", "position", "level", "xantaken", "error"],
+            fieldnames=["user_id", "name", "position", "level", "xantaken", "export_date"],
         )
         writer.writeheader()
         writer.writerows(rows)
